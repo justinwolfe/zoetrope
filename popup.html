@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoetrope</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .status {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .status.running {
+      background: rgba(76, 175, 80, 0.3);
+    }
+
+    .status.stopped {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .primary-button {
+      background: white;
+      color: #667eea;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .secondary-button {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+    }
+
+    .secondary-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .info {
+      font-size: 0.85em;
+      opacity: 0.9;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Zoetrope</h1>
+
+  <div id="status" class="status stopped">
+    <p id="status-text">Ready to start</p>
+  </div>
+
+  <button id="open-settings" class="primary-button">
+    Open Settings
+  </button>
+
+  <button id="stop-button" class="secondary-button" style="display: none;">
+    Stop Zoetrope
+  </button>
+
+  <div class="info">
+    <p>Turn your GIFs into tab animations</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

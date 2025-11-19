@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoetrope Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Zoetrope Settings</h1>
+      <p class="subtitle">Transform your GIFs into mesmerizing tab animations</p>
+    </header>
+
+    <main>
+      <section class="input-section">
+        <h2>1. Choose Your GIF</h2>
+
+        <div class="input-group">
+          <label for="gif-url">Enter GIF URL:</label>
+          <input type="text" id="gif-url" placeholder="https://example.com/animation.gif">
+          <button id="load-url">Load from URL</button>
+        </div>
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <div class="input-group">
+          <label for="gif-file">Upload GIF File:</label>
+          <div class="drop-zone" id="drop-zone">
+            <p>Drag & drop a GIF here or click to browse</p>
+            <input type="file" id="gif-file" accept="image/gif" hidden>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-section">
+        <h2>2. Preview & Configure</h2>
+        <div id="preview-container">
+          <img id="preview-image" alt="GIF preview" style="display: none;">
+          <p id="preview-placeholder">Upload or enter a URL to see preview</p>
+        </div>
+
+        <div class="config-group">
+          <label for="framerate">Framerate (tabs):</label>
+          <div class="framerate-options">
+            <label class="radio-option">
+              <input type="radio" name="framerate" value="24" checked>
+              <span>24 fps</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="framerate" value="30">
+              <span>30 fps</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="framerate" value="60">
+              <span>60 fps</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="frame-info" style="display: none;">
+          <p>Frames extracted: <span id="frame-count">0</span></p>
+          <p>Animation duration: <span id="animation-duration">0</span>s</p>
+        </div>
+      </section>
+
+      <section class="action-section">
+        <h2>3. Start the Zoetrope</h2>
+        <button id="start-zoetrope" class="primary-button" disabled>
+          Extract Frames & Start
+        </button>
+        <button id="stop-zoetrope" class="secondary-button" style="display: none;">
+          Stop Zoetrope
+        </button>
+        <div id="status-message"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="lib/gifuct-js.min.js"></script>
+  <script src="lib/gif-frames.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
