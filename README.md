@@ -18,12 +18,34 @@ A zoetrope is a pre-film animation device that produces the illusion of motion b
 
 ### From Source (Developer Mode)
 
-1. Clone or download this repository
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" in the top-right corner
-4. Click "Load unpacked"
-5. Select the `zoetrope` directory
-6. The Zoetrope extension should now appear in your extensions list!
+1. **Clone or download this repository**
+   ```bash
+   git clone <repository-url>
+   cd zoetrope
+   ```
+
+2. **Install dependencies and build**
+   ```bash
+   npm install
+   npm run build
+   ```
+   This will create a `dist/` directory with the built extension.
+
+3. **Load in Chrome**
+   - Open Chrome and navigate to `chrome://extensions/`
+   - Enable "Developer mode" in the top-right corner
+   - Click "Load unpacked"
+   - Select the `dist/` directory (not the root directory!)
+   - The Zoetrope extension should now appear in your extensions list!
+
+### Development
+
+For development with auto-rebuild:
+```bash
+npm run dev
+```
+
+This will watch for changes and rebuild automatically.
 
 ## Usage
 
@@ -62,13 +84,28 @@ A zoetrope is a pre-film animation device that produces the illusion of motion b
 
 ### Architecture
 
-- **manifest.json**: Extension configuration with required permissions
+The extension uses a webpack build system to bundle npm dependencies:
+
+**Source Files (src/):**
 - **background.js**: Service worker handling tab management and cycling
-- **options.html/js**: Settings page for GIF upload and configuration
-- **frame.html/js**: Individual frame display page
-- **popup.html/js**: Extension popup interface
-- **lib/gif-frames.js**: GIF frame extraction utility
-- **lib/gifuct-js.min.js**: GIF parsing library
+- **options.js**: Settings page logic for GIF upload and configuration
+- **frame.js**: Individual frame display logic
+- **popup.js**: Extension popup interface logic
+- **gif-extractor.js**: GIF frame extraction utility using omggif
+
+**Static Files:**
+- **manifest.json**: Extension configuration with required permissions
+- **options.html/css**: Settings page markup and styling
+- **frame.html**: Individual frame display page
+- **popup.html**: Extension popup interface
+- **icons/**: Extension icons (16px, 48px, 128px)
+
+**Dependencies:**
+- **omggif**: Robust GIF decoder library for frame extraction
+- **webpack**: Module bundler for packaging the extension
+
+**Build Output (dist/):**
+All files are bundled and copied to the `dist/` directory for Chrome to load.
 
 ### Permissions Required
 
@@ -141,8 +178,10 @@ MIT License - Feel free to use, modify, and distribute!
 Inspired by the classic zoetrope device and modern web technologies.
 
 Built with:
-- Chrome Extensions API
-- Canvas API for frame extraction
+- Chrome Extensions API (Manifest V3)
+- [omggif](https://github.com/deanm/omggif) - GIF decoder library
+- Canvas API for frame rendering
+- Webpack for module bundling
 - Vanilla JavaScript (no frameworks!)
 
 ---

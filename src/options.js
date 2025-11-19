@@ -1,4 +1,5 @@
 // Options page JavaScript for Zoetrope Chrome Extension
+import { GIFExtractor } from './gif-extractor.js';
 
 let currentGifData = null;
 let extractedFrames = [];
@@ -118,9 +119,10 @@ async function processGif(blob, url) {
     previewImage.style.display = 'block';
     previewPlaceholder.style.display = 'none';
 
-    // Extract frames
+    // Extract frames using proper GIF library
     showStatus('Extracting frames...', 'info');
-    const frames = await extractGifFrames(blob);
+    const extractor = new GIFExtractor();
+    const frames = await extractor.extractFrames(blob);
 
     if (frames.length === 0) {
       throw new Error('No frames could be extracted from this GIF');
@@ -143,11 +145,6 @@ async function processGif(blob, url) {
   }
 }
 
-async function extractGifFrames(blob) {
-  const extractor = new GIFFrameExtractor();
-  return await extractor.extractFrames(blob);
-}
-
 async function handleStartZoetrope() {
   if (extractedFrames.length === 0) {
     showStatus('Please load a GIF first', 'error');
@@ -157,8 +154,7 @@ async function handleStartZoetrope() {
   showStatus('Starting Zoetrope...', 'info');
 
   try {
-    // Save frames to storage (Chrome has limits, so we'll use a different approach)
-    // Instead, we'll save frames to the background script
+    // Send frames to background script
     await chrome.runtime.sendMessage({
       type: 'START_ZOETROPE',
       frames: extractedFrames,
