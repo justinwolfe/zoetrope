@@ -76,17 +76,25 @@ async function createZoetropeWindow() {
   zoetropeState.windowId = window.id;
   zoetropeState.tabIds = [window.tabs[0].id];
 
-  // Create additional tabs
+  // Create additional tabs in parallel for better performance
+  const tabPromises = [];
   for (let i = 1; i < tabCount; i++) {
-    const tab = await chrome.tabs.create({
-      windowId: window.id,
-      url: `${extensionUrl}?frame=${i}`,
-      active: false
-    });
-    zoetropeState.tabIds.push(tab.id);
+    tabPromises.push(
+      chrome.tabs.create({
+        windowId: window.id,
+        url: `${extensionUrl}?frame=${i}`,
+        active: false
+      })
+    );
   }
 
+  const tabs = await Promise.all(tabPromises);
+  zoetropeState.tabIds.push(...tabs.map(tab => tab.id));
+
   console.log(`Created window with ${tabCount} tabs`);
+
+  // Give tabs a moment to load before starting animation
+  await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 function startTabCycling() {
@@ -96,16 +104,21 @@ function startTabCycling() {
 
   let currentTabIndex = 0;
 
-  zoetropeState.intervalId = setInterval(async () => {
+  zoetropeState.intervalId = setInterval(() => {
     if (!zoetropeState.isRunning) {
       return;
     }
 
     try {
-      // Activate the current tab
-      const tabId = zoetropeState.tabIds[currentTabIndex];
-
-      await chrome.tabs.update(tabId, { active: true });
+      // Activate the current tab using highlight for better performance
+      // highlight is faster than update for just switching tabs
+      chrome.tabs.highlight({
+        windowId: zoetropeState.windowId,
+        tabs: currentTabIndex
+      }).catch(error => {
+        console.error('Error highlighting tab:', error);
+        handleStopZoetrope();
+      });
 
       // Move to next tab
       currentTabIndex++;
@@ -120,12 +133,13 @@ function startTabCycling() {
           zoetropeState.currentBatchStart = 0;
         }
 
-        // Update all tabs with the next batch of frames
-        await updateTabFrames();
+        // Only update tab frames if we have more frames than tabs (batching needed)
+        if (zoetropeState.frames.length > zoetropeState.framerate) {
+          updateTabFrames();
+        }
       }
     } catch (error) {
       console.error('Error cycling tabs:', error);
-      // If there's an error (e.g., window closed), stop the zoetrope
       handleStopZoetrope();
     }
   }, intervalMs);
@@ -135,21 +149,23 @@ function startTabCycling() {
 
 async function updateTabFrames() {
   // Update each tab with the next frame in the sequence
-  const promises = zoetropeState.tabIds.map(async (tabId, index) => {
-    const frameIndex = (zoetropeState.currentBatchStart + index) % zoetropeState.frames.length;
-    const extensionUrl = chrome.runtime.getURL('frame.html');
+  // This runs asynchronously to avoid blocking the animation
+  const extensionUrl = chrome.runtime.getURL('frame.html');
 
-    try {
-      await chrome.tabs.update(tabId, {
-        url: `${extensionUrl}?frame=${frameIndex}`
-      });
-    } catch (error) {
+  const promises = zoetropeState.tabIds.map((tabId, index) => {
+    const frameIndex = (zoetropeState.currentBatchStart + index) % zoetropeState.frames.length;
+
+    return chrome.tabs.update(tabId, {
+      url: `${extensionUrl}?frame=${frameIndex}`
+    }).catch(error => {
       console.error(`Error updating tab ${tabId}:`, error);
-    }
+    });
   });
 
-  await Promise.all(promises);
-  console.log(`Updated tabs with frames starting from index ${zoetropeState.currentBatchStart}`);
+  // Don't await - let it happen in background for smoother animation
+  Promise.all(promises).then(() => {
+    console.log(`Updated tabs with frames starting from index ${zoetropeState.currentBatchStart}`);
+  });
 }
 
 async function handleStopZoetrope() {

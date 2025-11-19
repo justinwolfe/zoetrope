@@ -20,11 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function displayFrame(frameData) {
   const img = document.getElementById('frame-image');
-  const loading = document.querySelector('.loading');
 
   img.src = frameData.dataUrl;
   img.onload = () => {
-    loading.style.display = 'none';
-    img.style.display = 'block';
+    img.classList.add('loaded');
   };
 }

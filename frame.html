@@ -24,19 +24,16 @@
       max-width: 100vw;
       max-height: 100vh;
       object-fit: contain;
-      display: block;
+      display: none;
     }
 
-    .loading {
-      color: white;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 18px;
+    #frame-image.loaded {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div class="loading">Loading frame...</div>
-  <img id="frame-image" style="display: none;" alt="Animation frame">
+  <img id="frame-image" alt="Animation frame">
 
   <script src="frame.js"></script>
 </body>
