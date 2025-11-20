@@ -190,6 +190,8 @@ button {
 .framerate-options {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .radio-option {
@@ -202,6 +204,7 @@ button {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
+  min-width: 100px;
 }
 
 .radio-option:hover {
@@ -221,6 +224,27 @@ button {
 .radio-option:has(input[type="radio"]:checked) {
   border-color: #667eea;
   background: #f8f9ff;
+}
+
+#custom-framerate {
+  width: 80px;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1em;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+#custom-framerate:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+#custom-framerate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
 }
 
 #frame-info {

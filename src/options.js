@@ -13,6 +13,7 @@ const dropZone = document.getElementById('drop-zone');
 const previewImage = document.getElementById('preview-image');
 const previewPlaceholder = document.getElementById('preview-placeholder');
 const framerateOptions = document.querySelectorAll('input[name="framerate"]');
+const customFramerateInput = document.getElementById('custom-framerate');
 const startButton = document.getElementById('start-zoetrope');
 const stopButton = document.getElementById('stop-zoetrope');
 const statusMessage = document.getElementById('status-message');
@@ -33,9 +34,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
   framerateOptions.forEach(option => {
     option.addEventListener('change', (e) => {
-      selectedFramerate = parseInt(e.target.value);
+      if (e.target.value === 'custom') {
+        customFramerateInput.disabled = false;
+        customFramerateInput.focus();
+        selectedFramerate = parseInt(customFramerateInput.value) || 24;
+      } else {
+        customFramerateInput.disabled = true;
+        selectedFramerate = parseInt(e.target.value);
+      }
     });
   });
+
+  // Handle custom framerate input changes
+  customFramerateInput.addEventListener('input', (e) => {
+    const customRadio = document.querySelector('input[name="framerate"][value="custom"]');
+    if (customRadio.checked) {
+      selectedFramerate = parseInt(e.target.value) || 24;
+    }
+  });
+
+  // Click on custom input should select custom radio
+  customFramerateInput.addEventListener('focus', () => {
+    const customRadio = document.querySelector('input[name="framerate"][value="custom"]');
+    customRadio.checked = true;
+    customFramerateInput.disabled = false;
+    selectedFramerate = parseInt(customFramerateInput.value) || 24;
+  });
+
+  // Initialize custom input state
+  customFramerateInput.disabled = true;
 
   // Load saved state
   chrome.storage.local.get(['isRunning'], (result) => {
@@ -148,6 +175,17 @@ async function processGif(blob, url) {
 async function handleStartZoetrope() {
   if (extractedFrames.length === 0) {
     showStatus('Please load a GIF first', 'error');
+    return;
+  }
+
+  // Validate custom framerate
+  if (selectedFramerate < 1 || selectedFramerate > 120) {
+    showStatus('Framerate must be between 1 and 120 fps', 'error');
+    return;
+  }
+
+  if (isNaN(selectedFramerate)) {
+    showStatus('Please enter a valid framerate', 'error');
     return;
   }
 
